@@ -1,0 +1,73 @@
+body {
+  background-color: #121212;
+  color: #e0e0e0;
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  transition: background 0.5s ease, color 0.5s ease;
+}
+
+h1 {
+  margin-top: 20px;
+  color: #00ffc8;
+  animation: fadeIn 1.2s ease;
+}
+
+textarea, button {
+  width: 90%;
+  max-width: 600px;
+  margin: 15px 0;
+  padding: 15px;
+  font-size: 1em;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 255, 200, 0.2);
+  transition: all 0.3s ease;
+}
+
+textarea {
+  background-color: #1f1f1f;
+  color: #e0e0e0;
+  height: 150px;
+  resize: none;
+}
+
+textarea:focus {
+  outline: none;
+  box-shadow: 0 0 12px rgba(0, 255, 200, 0.4);
+}
+
+button {
+  background-color: #00ffc8;
+  color: #121212;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+  background-color: #00e6b0;
+  transform: scale(1.05);
+}
+
+#summaryResult {
+  white-space: pre-wrap;
+  padding: 20px;
+  background-color: #1e1e1e;
+  border-radius: 8px;
+  max-width: 600px;
+  width: 90%;
+  margin-top: 15px;
+  box-shadow: 0 0 15px rgba(0, 255, 200, 0.1);
+  animation: fadeIn 0.8s ease;
+}
+
+/* Fade animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
