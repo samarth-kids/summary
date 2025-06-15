@@ -9,6 +9,16 @@ async function summarize() {
   document.getElementById("summaryResult").innerText = "Summarizing…";
 
   try {
+const length = document.getElementById("lengthSelect").value;
+
+let minLength = 30, maxLength = 200;
+if (length === "short") {
+  minLength = 10;
+  maxLength = 50;
+} else if (length === "long") {
+  minLength = 80;
+  maxLength = 250;
+}
     const response = await fetch(
       "https://api-inference.huggingface.co/models/facebook/bart-large-cnn",
       {
@@ -19,11 +29,11 @@ async function summarize() {
         },
         body: JSON.stringify({
   inputs: input,
-  parameters: {
-    min_length: 30,
-    max_length: 200,
-    do_sample: false
-  }
+ parameters: {
+  min_length: minLength,
+  max_length: maxLength,
+  do_sample: false
+}
 })
       }
     );
