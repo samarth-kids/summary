@@ -1,70 +1,95 @@
-async function summarize() {
-  const input = document.getElementById("inputText").value.trim();
-  const lengthOption = document.getElementById("summaryLength").value;
-  const chatBox = document.getElementById("chatBox");
+const chatBox = document.getElementById("chatBox");
+const inputBox = document.getElementById("inputText");
+const micBtn = document.getElementById("micBtn");
 
-  if (!input) {
-    alert("Please enter text to summarize.");
-    return;
-  }
+async function sendMessage() {
+  const input = inputBox.value.trim();
+  const task = document.getElementById("task").value;
+  if (!input) return alert("Please enter some text.");
 
-  // Add user message to chat
   const userMsg = document.createElement("div");
   userMsg.className = "message user";
   userMsg.innerText = input;
   chatBox.appendChild(userMsg);
 
-  // Typing animation
   const aiMsg = document.createElement("div");
-  aiMsg.className = "message ai typing-dots";
-  aiMsg.innerText = "Summarizing";
+  aiMsg.className = "message ai";
+  aiMsg.innerText = "Om is thinking...";
   chatBox.appendChild(aiMsg);
   chatBox.scrollTop = chatBox.scrollHeight;
 
-  let minLen = 30, maxLen = 120;
-  if (lengthOption === "short") {
-    minLen = 10; maxLen = 60;
-  } else if (lengthOption === "long") {
-    minLen = 60; maxLen = 300;
-  }
+  let model = "";
+  if (task === "summarize") model = "facebook/bart-large-cnn";
+  else if (task === "expand") model = "pszemraj/long-t5-tglobal-base-16384-book-summary";
+  else if (task === "grammar") model = "vennify/t5-base-grammar-correction";
+  else if (task === "qa") model = "deepset/roberta-base-squad2";
 
   try {
-    console.log("Sending request to Hugging Face...");
-
-    const response = await fetch("https://api-inference.huggingface.co/models/facebook/bart-large-cnn", {
+    const res = await fetch(`https://api-inference.huggingface.co/models/${model}`, {
       method: "POST",
       headers: {
-        "Authorization": "Bearer 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",
+        Authorization: "Bearer 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", // Replace with your actual token
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        inputs: input,
-        parameters: {
-          min_length: minLen,
-          max_length: maxLen,
-          do_sample: false
-        }
+        inputs: task === "qa" ? { question: input, context: input } : input
       })
     });
 
-    const result = await response.json();
-    console.log("API Raw Result:", result);
+    const result = await res.json();
+    console.log(result);
 
-    if (result && result[0] && result[0].summary_text) {
-      aiMsg.classList.remove("typing-dots");
+    if (Array.isArray(result) && result[0]?.summary_text) {
       aiMsg.innerText = result[0].summary_text;
-    } else if (result.error && result.error.includes("loading")) {
-      aiMsg.innerText = "Model is loading. Try again in 20–30 seconds.";
-    } else if (result.error) {
-      aiMsg.innerText = "API Error: " + result.error;
+    } else if (result?.answer) {
+      aiMsg.innerText = result.answer;
+    } else if (result?.error) {
+      aiMsg.innerText = "Error: " + result.error;
     } else {
-      aiMsg.innerText = "Unexpected response.";
+      aiMsg.innerText = "Om couldn't generate a response.";
     }
-
-  } catch (error) {
-    aiMsg.innerText = "Fetch failed: " + error.message;
+  } catch (err) {
+    aiMsg.innerText = "Network error: " + err.message;
   }
 
   chatBox.scrollTop = chatBox.scrollHeight;
-  document.getElementById("inputText").value = "";
+  inputBox.value = "";
+}
+
+function clearChat() {
+  chatBox.innerHTML = "";
+}
+
+// Voice input using Web Speech API
+function startListening() {
+  if (!('webkitSpeechRecognition' in window)) {
+    alert("Speech recognition not supported in your browser.");
+    return;
+  }
+
+  const recognition = new webkitSpeechRecognition();
+  recognition.lang = "en-US";
+  recognition.interimResults = false;
+  recognition.continuous = false;
+
+  recognition.onstart = () => {
+    micBtn.classList.add("listening");
+    micBtn.innerText = "🛑";
+  };
+
+  recognition.onend = () => {
+    micBtn.classList.remove("listening");
+    micBtn.innerText = "🎤";
+  };
+
+  recognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript;
+    inputBox.value = transcript;
+  };
+
+  recognition.onerror = (event) => {
+    console.error("Speech error:", event.error);
+  };
+
+  recognition.start();
 }
