@@ -1,23 +1,26 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>AI Summarizer</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Text Summarizer</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h2>Text Summarizer</h2>
-  <textarea id="inputText" rows="10" cols="50" placeholder="Paste text here..."></textarea><br><br>
+  <div class="container">
+    <h1>AI Text Summarizer</h1>
+    <div class="chat-box" id="chatBox"></div>
 
-  <label for="lengthSelect">Summary Length:</label>
-  <select id="lengthSelect">
-    <option value="short">Short</option>
-    <option value="medium" selected>Medium</option>
-    <option value="long">Long</option>
-  </select><br><br>
+    <textarea id="inputText" placeholder="Paste or write something here..."></textarea>
 
-  <button onclick="summarize()">Summarize</button>
+    <select id="summaryLength">
+      <option value="short">Short</option>
+      <option value="medium" selected>Medium</option>
+      <option value="long">Long</option>
+    </select>
 
-  <h3>Result:</h3>
-  <div id="summaryResult">...</div>
+    <button onclick="summarize()">Send</button>
+  </div>
 
   <script src="script.js"></script>
 </body>
