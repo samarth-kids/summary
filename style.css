@@ -1,88 +1,88 @@
 body {
   background-color: #111;
-  color: #0ff;
   font-family: Arial, sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
+  color: #fff;
   margin: 0;
+  padding: 0;
 }
 
-h2 {
-  margin-bottom: 20px;
+.container {
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+}
+
+h1 {
   text-align: center;
+  color: cyan;
+}
+
+.chat-box {
+  background: #222;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 10px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.message {
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 8px;
+  max-width: 80%;
+  word-wrap: break-word;
+}
+
+.user {
+  background-color: #444;
+  align-self: flex-end;
+  text-align: right;
+}
+
+.ai {
+  background-color: #333;
+  align-self: flex-start;
+  color: cyan;
 }
 
 textarea {
-  width: 90%;
-  max-width: 700px;
-  min-height: 150px;
+  width: 100%;
+  height: 100px;
+  margin-top: 10px;
   padding: 10px;
-  font-size: 16px;
-  border-radius: 10px;
+  font-size: 1em;
+  border-radius: 5px;
   border: none;
-  resize: vertical;
-  background-color: #222;
-  color: #fff;
-  margin-bottom: 20px;
+  resize: none;
 }
 
 select, button {
   padding: 10px;
-  font-size: 16px;
-  margin: 5px;
+  margin-top: 10px;
+  font-size: 1em;
+  border-radius: 5px;
   border: none;
-  border-radius: 8px;
-}
-
-select {
-  background-color: #333;
-  color: #0ff;
+  width: 100%;
 }
 
 button {
-  background-color: #0ff;
+  background-color: cyan;
   color: #000;
   cursor: pointer;
-  width: 200px;
+  margin-top: 5px;
 }
 
 button:hover {
-  background-color: #0dd;
+  background-color: #00e0e0;
 }
 
-#summaryResult {
-  margin-top: 20px;
-  padding: 15px;
-  max-width: 90%;
-  width: 700px;
-  background-color: #222;
-  color: #fff;
-  border-radius: 10px;
-}
+@media screen and (max-width: 600px) {
+  .container {
+    padding: 10px;
+  }
 
-/* ✅ Responsive layout */
-@media (min-width: 768px) {
   textarea {
-    min-height: 200px;
-  }
-
-  button {
-    width: 250px;
-  }
-}
-
-@media (max-width: 480px) {
-  h2 {
-    font-size: 20px;
-  }
-
-  textarea, #summaryResult {
-    font-size: 14px;
-  }
-
-  button {
-    width: 100%;
+    height: 80px;
   }
 }
