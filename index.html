@@ -2,24 +2,29 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Text Summarizer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Om - Your AI Assistant</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
-    <h1>AI Text Summarizer</h1>
+    <h1>Om - Your AI Assistant</h1>
     <div class="chat-box" id="chatBox"></div>
 
-    <textarea id="inputText" placeholder="Paste or write something here..."></textarea>
+    <textarea id="inputText" placeholder="Type or use mic..."></textarea>
 
-    <select id="summaryLength">
-      <option value="short">Short</option>
-      <option value="medium" selected>Medium</option>
-      <option value="long">Long</option>
-    </select>
+    <div class="button-row">
+      <select id="task">
+        <option value="summarize">Summarize</option>
+        <option value="expand">Expand</option>
+        <option value="grammar">Grammar Fix</option>
+        <option value="qa">Q&A</option>
+      </select>
 
-    <button onclick="summarize()">Send</button>
+      <button onclick="sendMessage()">Send</button>
+      <button onclick="clearChat()">Clear Chat</button>
+      <button class="mic-button" onclick="startListening()" id="micBtn">🎤</button>
+    </div>
   </div>
 
   <script src="script.js"></script>
