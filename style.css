@@ -114,3 +114,22 @@ textarea:focus {
   color: #0f0f0f;
   box-shadow: 0 0 15px #bb86fc;
 }
+
+.status {
+  margin-bottom: 10px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.status .dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.status .dot.green { background-color: #4caf50; }
+.status .dot.orange { background-color: orange; }
+.status .dot.red { background-color: red; }
+.status .dot.gray { background-color: gray; }
