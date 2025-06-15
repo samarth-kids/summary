@@ -3,27 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Om - Your AI Assistant</title>
+  <title>Om - AI Assistant</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
-    <h1>Om - Your AI Assistant</h1>
+    <h1>Om - AI Assistant</h1>
+
+    <!-- ✅ Model status indicator -->
+    <div id="status" class="status">
+      <span class="dot gray"></span>
+      Checking model status...
+    </div>
+
     <div class="chat-box" id="chatBox"></div>
 
-    <textarea id="inputText" placeholder="Type or use mic..."></textarea>
+    <textarea id="inputText" placeholder="Ask me anything..."></textarea>
 
-    <div class="button-row">
-      <select id="task">
-        <option value="summarize">Summarize</option>
-        <option value="expand">Expand</option>
-        <option value="grammar">Grammar Fix</option>
-        <option value="qa">Q&A</option>
-      </select>
+    <select id="summaryLength">
+      <option value="short">Short</option>
+      <option value="medium" selected>Medium</option>
+      <option value="long">Long</option>
+    </select>
 
-      <button onclick="sendMessage()">Send</button>
+    <div class="controls">
+      <button onclick="summarize()">Send</button>
       <button onclick="clearChat()">Clear Chat</button>
-      <button class="mic-button" onclick="startListening()" id="micBtn">🎤</button>
     </div>
   </div>
 
