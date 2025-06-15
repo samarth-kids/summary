@@ -1,125 +1,123 @@
+const API_URL = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn";
+const API_TOKEN = "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"; // Replace with yours if needed
+
 const chatBox = document.getElementById("chatBox");
+const inputText = document.getElementById("inputText");
+const summaryLength = document.getElementById("summaryLength");
 const statusEl = document.getElementById("status");
-const modelName = "facebook/bart-large-cnn"; // or any model you're using
-const hfToken = "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"; // replace with your token
 
 // Check model readiness
 async function checkModelStatus() {
-  statusEl.querySelector(".dot").className = "dot orange";
-  statusEl.innerHTML = `<span class="dot orange"></span> Checking model status...`;
+  statusEl.innerHTML = `<span class="dot orange"></span> Checking model...`;
 
   try {
-    const res = await fetch(`https://api-inference.huggingface.co/status/${modelName}`, {
-      headers: { Authorization: `Bearer ${hfToken}` },
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${API_TOKEN}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        inputs: "Hello",
+        parameters: { max_length: 5 }
+      })
     });
+
     const data = await res.json();
 
-    if (data?.loaded) {
-      statusEl.querySelector(".dot").className = "dot green";
-      statusEl.innerHTML = `<span class="dot green"></span> Model is ready`;
+    if (data?.[0]?.summary_text) {
+      statusEl.innerHTML = `<span class="dot green"></span> Om is ready`;
     } else {
-      statusEl.querySelector(".dot").className = "dot orange";
-      statusEl.innerHTML = `<span class="dot orange"></span> Model is loading...`;
+      statusEl.innerHTML = `<span class="dot red"></span> Model not ready`;
     }
-  } catch (e) {
-    statusEl.querySelector(".dot").className = "dot red";
+  } catch (err) {
     statusEl.innerHTML = `<span class="dot red"></span> Failed to check model status`;
   }
 }
 
-// Run on page load
-checkModelStatus();
-const inputBox = document.getElementById("inputText");
-const micBtn = document.getElementById("micBtn");
-
-async function sendMessage() {
-  const input = inputBox.value.trim();
-  const task = document.getElementById("task").value;
+// Handle summarization
+async function summarize() {
+  const input = inputText.value.trim();
   if (!input) return alert("Please enter some text.");
 
-  const userMsg = document.createElement("div");
-  userMsg.className = "message user";
-  userMsg.innerText = input;
-  chatBox.appendChild(userMsg);
+  // Append user message
+  addMessage(input, "user");
 
-  const aiMsg = document.createElement("div");
-  aiMsg.className = "message ai";
-  aiMsg.innerText = "Om is thinking...";
-  chatBox.appendChild(aiMsg);
-  chatBox.scrollTop = chatBox.scrollHeight;
+  // AI typing animation
+  const aiMsg = addMessage("Om is thinking...", "ai", true);
 
-  let model = "";
-  if (task === "summarize") model = "facebook/bart-large-cnn";
-  else if (task === "expand") model = "pszemraj/long-t5-tglobal-base-16384-book-summary";
-  else if (task === "grammar") model = "vennify/t5-base-grammar-correction";
-  else if (task === "qa") model = "deepset/roberta-base-squad2";
+  // Length setting
+  let minLen = 30, maxLen = 120;
+  if (summaryLength.value === "short") { minLen = 10; maxLen = 60; }
+  else if (summaryLength.value === "long") { minLen = 60; maxLen = 300; }
 
   try {
-    const res = await fetch(`https://api-inference.huggingface.co/models/${model}`, {
+    const response = await fetch(API_URL, {
       method: "POST",
       headers: {
-        Authorization: "Bearer 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", // Replace with your actual token
+        Authorization: `Bearer ${API_TOKEN}`,
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        inputs: task === "qa" ? { question: input, context: input } : input
+        inputs: input,
+        parameters: {
+          min_length: minLen,
+          max_length: maxLen,
+          do_sample: false
+        }
       })
     });
 
-    const result = await res.json();
-    console.log(result);
-
-    if (Array.isArray(result) && result[0]?.summary_text) {
-      aiMsg.innerText = result[0].summary_text;
-    } else if (result?.answer) {
-      aiMsg.innerText = result.answer;
-    } else if (result?.error) {
-      aiMsg.innerText = "Error: " + result.error;
-    } else {
-      aiMsg.innerText = "Om couldn't generate a response.";
-    }
-  } catch (err) {
-    aiMsg.innerText = "Network error: " + err.message;
+    const result = await response.json();
+    aiMsg.classList.remove("typing");
+    aiMsg.innerText = result?.[0]?.summary_text || result?.error || "No summary available.";
+  } catch (error) {
+    aiMsg.classList.remove("typing");
+    aiMsg.innerText = "Error: " + error.message;
   }
 
+  inputText.value = "";
   chatBox.scrollTop = chatBox.scrollHeight;
-  inputBox.value = "";
 }
 
+// Add chat message
+function addMessage(text, sender = "user", isTyping = false) {
+  const msg = document.createElement("div");
+  msg.className = `message ${sender}`;
+  if (isTyping) msg.classList.add("typing");
+  msg.innerText = text;
+  chatBox.appendChild(msg);
+  chatBox.scrollTop = chatBox.scrollHeight;
+  return msg;
+}
+
+// Clear chat
 function clearChat() {
   chatBox.innerHTML = "";
 }
 
-// Voice input using Web Speech API
-function startListening() {
+// Voice input
+function startVoiceInput() {
   if (!('webkitSpeechRecognition' in window)) {
-    alert("Speech recognition not supported in your browser.");
+    alert("Speech recognition not supported.");
     return;
   }
 
   const recognition = new webkitSpeechRecognition();
   recognition.lang = "en-US";
   recognition.interimResults = false;
-  recognition.continuous = false;
-
-  recognition.onstart = () => {
-    micBtn.classList.add("listening");
-    micBtn.innerText = "🛑";
-  };
-
-  recognition.onend = () => {
-    micBtn.classList.remove("listening");
-    micBtn.innerText = "🎤";
-  };
 
   recognition.onresult = (event) => {
     const transcript = event.results[0][0].transcript;
-    inputBox.value = transcript;
+    inputText.value = transcript;
   };
 
   recognition.onerror = (event) => {
-    console.error("Speech error:", event.error);
+    alert("Speech recognition error: " + event.error);
   };
 
   recognition.start();
 }
+
+// Initialize
+checkModelStatus();
