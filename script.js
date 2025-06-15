@@ -17,7 +17,8 @@ async function summarize() {
   // Add "typing" effect
   const aiMsg = document.createElement("div");
   aiMsg.className = "message ai";
-  aiMsg.innerText = "Summarizing...";
+  aiMsg.innerText = "Summarizing";
+aiMsg.classList.add("typing-dots");
   chatBox.appendChild(aiMsg);
   chatBox.scrollTop = chatBox.scrollHeight;
 
