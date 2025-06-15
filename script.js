@@ -17,7 +17,14 @@ async function summarize() {
           "Authorization": "Bearer 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",
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ inputs: input })
+        body: JSON.stringify({
+  inputs: input,
+  parameters: {
+    min_length: 30,
+    max_length: 120,
+    do_sample: false
+  }
+})
       }
     );
 
