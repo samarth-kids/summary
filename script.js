@@ -1,5 +1,6 @@
 async function summarize() {
   const input = document.getElementById("inputText").value;
+  const length = document.getElementById("lengthSelect").value;
 
   if (!input.trim()) {
     alert("Please enter text to summarize.");
@@ -8,33 +9,38 @@ async function summarize() {
 
   document.getElementById("summaryResult").innerText = "Summarizing…";
 
-  try {
-const length = document.getElementById("lengthSelect").value;
+  // Dynamic summary length
+  let minLength, maxLength;
+  if (length === "short") {
+    minLength = 15;
+    maxLength = 60;
+  } else if (length === "medium") {
+    minLength = 30;
+    maxLength = 120;
+  } else {
+    minLength = 50;
+    maxLength = 250;
+  }
 
-let minLength = 30, maxLength = 200;
-if (length === "short") {
-  minLength = 10;
-  maxLength = 50;
-} else if (length === "long") {
-  minLength = 80;
-  maxLength = 250;
-}
+  console.log("Selected Length:", length, "| min:", minLength, "| max:", maxLength);
+
+  try {
     const response = await fetch(
       "https://api-inference.huggingface.co/models/facebook/bart-large-cnn",
       {
         method: "POST",
         headers: {
-          "Authorization": "Bearer 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",
+          "Authorization": "Bearer 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", // Replace with your token
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-  inputs: input,
- parameters: {
-  min_length: minLength,
-  max_length: maxLength,
-  do_sample: false
-}
-})
+          inputs: input,
+          parameters: {
+            min_length: minLength,
+            max_length: maxLength,
+            do_sample: false
+          }
+        })
       }
     );
 
@@ -46,10 +52,11 @@ if (length === "short") {
     } else if (result.error) {
       document.getElementById("summaryResult").innerText = "API Error: " + result.error;
     } else {
-      document.getElementById("summaryResult").innerText = "No summary found.";
+      document.getElementById("summaryResult").innerText = "Unexpected error.";
     }
-  } catch (err) {
-    console.error("Error:", err);
-    document.getElementById("summaryResult").innerText = "Something went wrong: " + err.message;
+
+  } catch (error) {
+    console.error("Fetch Error:", error);
+    document.getElementById("summaryResult").innerText = "Error: " + error.message;
   }
 }
