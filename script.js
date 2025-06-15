@@ -1,4 +1,34 @@
 const chatBox = document.getElementById("chatBox");
+const statusEl = document.getElementById("status");
+const modelName = "facebook/bart-large-cnn"; // or any model you're using
+const hfToken = "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"; // replace with your token
+
+// Check model readiness
+async function checkModelStatus() {
+  statusEl.querySelector(".dot").className = "dot orange";
+  statusEl.innerHTML = `<span class="dot orange"></span> Checking model status...`;
+
+  try {
+    const res = await fetch(`https://api-inference.huggingface.co/status/${modelName}`, {
+      headers: { Authorization: `Bearer ${hfToken}` },
+    });
+    const data = await res.json();
+
+    if (data?.loaded) {
+      statusEl.querySelector(".dot").className = "dot green";
+      statusEl.innerHTML = `<span class="dot green"></span> Model is ready`;
+    } else {
+      statusEl.querySelector(".dot").className = "dot orange";
+      statusEl.innerHTML = `<span class="dot orange"></span> Model is loading...`;
+    }
+  } catch (e) {
+    statusEl.querySelector(".dot").className = "dot red";
+    statusEl.innerHTML = `<span class="dot red"></span> Failed to check model status`;
+  }
+}
+
+// Run on page load
+checkModelStatus();
 const inputBox = document.getElementById("inputText");
 const micBtn = document.getElementById("micBtn");
 
