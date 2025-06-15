@@ -21,7 +21,7 @@ async function summarize() {
   inputs: input,
   parameters: {
     min_length: 30,
-    max_length: 120,
+    max_length: 200,
     do_sample: false
   }
 })
