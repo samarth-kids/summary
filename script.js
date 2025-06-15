@@ -1,9 +1,9 @@
 async function summarize() {
-  const input = document.getElementById("inputText").value;
+  const input = document.getElementById("inputText").value.trim();
   const lengthOption = document.getElementById("summaryLength").value;
   const chatBox = document.getElementById("chatBox");
 
-  if (!input.trim()) {
+  if (!input) {
     alert("Please enter text to summarize.");
     return;
   }
@@ -14,29 +14,27 @@ async function summarize() {
   userMsg.innerText = input;
   chatBox.appendChild(userMsg);
 
-  // Add "typing" effect
+  // Typing animation
   const aiMsg = document.createElement("div");
-  aiMsg.className = "message ai";
+  aiMsg.className = "message ai typing-dots";
   aiMsg.innerText = "Summarizing";
-aiMsg.classList.add("typing-dots");
   chatBox.appendChild(aiMsg);
   chatBox.scrollTop = chatBox.scrollHeight;
 
-  // Define summary parameters
   let minLen = 30, maxLen = 120;
   if (lengthOption === "short") {
-    minLen = 10;
-    maxLen = 60;
+    minLen = 10; maxLen = 60;
   } else if (lengthOption === "long") {
-    minLen = 60;
-    maxLen = 300;
+    minLen = 60; maxLen = 300;
   }
 
   try {
+    console.log("Sending request to Hugging Face...");
+
     const response = await fetch("https://api-inference.huggingface.co/models/facebook/bart-large-cnn", {
       method: "POST",
       headers: {
-        "Authorization": "Bearer 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",  // Replace with your token
+        "Authorization": "Bearer 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",
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
@@ -50,17 +48,21 @@ aiMsg.classList.add("typing-dots");
     });
 
     const result = await response.json();
-    console.log("Response:", result);
+    console.log("API Raw Result:", result);
 
     if (result && result[0] && result[0].summary_text) {
+      aiMsg.classList.remove("typing-dots");
       aiMsg.innerText = result[0].summary_text;
+    } else if (result.error && result.error.includes("loading")) {
+      aiMsg.innerText = "Model is loading. Try again in 20–30 seconds.";
     } else if (result.error) {
       aiMsg.innerText = "API Error: " + result.error;
     } else {
-      aiMsg.innerText = "Unexpected response from AI.";
+      aiMsg.innerText = "Unexpected response.";
     }
+
   } catch (error) {
-    aiMsg.innerText = "Request failed: " + error.message;
+    aiMsg.innerText = "Fetch failed: " + error.message;
   }
 
   chatBox.scrollTop = chatBox.scrollHeight;
