@@ -11,21 +11,10 @@ async function checkModelStatus() {
   statusEl.innerHTML = `<span class="dot orange"></span> Checking model...`;
 
   try {
-    const res = await fetch(API_URL, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${API_TOKEN}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        inputs: "Hello",
-        parameters: { max_length: 5 }
-      })
-    });
-
+    const res = await fetch("https://huggingface.co/api/models/facebook/bart-large-cnn");
     const data = await res.json();
 
-    if (data?.[0]?.summary_text) {
+    if (data?.lastModified) {
       statusEl.innerHTML = `<span class="dot green"></span> Om is ready`;
     } else {
       statusEl.innerHTML = `<span class="dot red"></span> Model not ready`;
